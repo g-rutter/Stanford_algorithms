@@ -9,7 +9,6 @@ import pdb
 def mergeSort(A):
     '''Return sorted copy of A'''
 
-    print "Entering mergeSort with", A
     lenA = len(A)
 
     if lenA <= 1:
@@ -34,19 +33,16 @@ def mergeSort(A):
 
             #If an array reaches its end, add on all the elements from other
             if i == len(B):
-                [sortedA.append(C[k]) for k in range(j, len(C))]
-                return sortedA
+                return sortedA + C[j:]
             elif j == len(C):
-                [sortedA.append(B[k]) for k in range(i, len(B))]
-                return sortedA
-
-        return sortedA
-
+                return sortedA + B[i:]
 
 if __name__ == "__main__":
-    unsorted = [ float(element) for element in sys.argv[1:] ]
 
-    # pdb.run( 'mergeSort(unsorted)' )
+    try:
+        unsorted = [ float(element) for element in sys.argv[1:] ]
+    except ValueError:
+        print "Please pass an unsorted list of floats as the arguments of the program."
+        exit()
+
     print mergeSort(unsorted)
-
-
