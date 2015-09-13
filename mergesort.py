@@ -23,7 +23,7 @@ def mergeSort(A):
         i = 0
         j = 0
         sortedA = []
-        while (i+j) < lenA:
+        while True:
             if B[i] < C[j]:
                 sortedA.append(B[i])
                 i += 1
