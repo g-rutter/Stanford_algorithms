@@ -16,10 +16,10 @@ def mergeSort(A):
 
     else:
         halflenA = lenA/2
-        B = mergeSort(A[halflenA:])
-        C = mergeSort(A[:halflenA])
+        B = mergeSort(A[:halflenA])
+        C = mergeSort(A[halflenA:])
 
-        #Merge sorted arrays A and B
+        # Merge sorted arrays B and C
         i = 0
         j = 0
         sortedA = []
@@ -31,7 +31,7 @@ def mergeSort(A):
                 sortedA.append(C[j])
                 j += 1
 
-            #If an array reaches its end, add on all the elements from other
+            # If an array reaches its end, add on all the elements from other
             if i == len(B):
                 return sortedA + C[j:]
             elif j == len(C):
