@@ -3,7 +3,6 @@
 
 #Discussed in section 3.
 
-import sys
 import argparse
 import numpy as np
 
