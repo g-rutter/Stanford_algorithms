@@ -28,7 +28,7 @@ def partition(A, pivot):
     #Put pivot element at boundary
     A[j-1], A[0] = A[0], A[j-1]
 
-    return A, j
+    return A, j-1
 
 def quickSort(A):
 
@@ -39,7 +39,7 @@ def quickSort(A):
     (A, p) = partition(A, p)
     #calling QS on left side
     A[:p] = quickSort(A[:p])
-    A[p:] = quickSort(A[p:])
+    A[p+1:] = quickSort(A[p+1:])
 
     return A
 
