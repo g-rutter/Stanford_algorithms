@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Discussed in section 5
+# Discussed in section 8
 
 import numpy as np
 import sys
@@ -10,7 +10,7 @@ import argparse
 def partition(A, pivot):
     '''
     In-place partition in linear time
-    as specified by quickSort algorthm
+    as specified by randomSelect algorthm
     '''
 
     #Put pivot element first
@@ -30,27 +30,38 @@ def partition(A, pivot):
 
     return A, j-1
 
-def quickSort(A):
+def randomSelect(A,i):
+    '''
+    Use randomization of pivot point to find
+    ith element by magnitude
+    '''
 
-    if len (A) < 2:
+    if len (A) == 1:
         return A
 
     p = np.random.randint(0, len(A))
     (A, p) = partition(A, p)
 
-    A[:p]   = quickSort(A[:p])
-    A[p+1:] = quickSort(A[p+1:])
+    #Hone in without sorting unnecessary array regions
+    if p < i:
+        A = randomSelect(A[p+1:], i-(p+1))
+    elif p > i:
+        A = randomSelect(A[:p], i)
+    elif p == i:
+        A = A[p:p+1]
 
     return A
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        'quickSort in-place sorting algorithm in O(n log n)')
+        'randomSelect in-place sorting algorithm in O(n log n)')
     parser.add_argument('-A', type=float, nargs='+',
             help='Array to sort')
+    parser.add_argument('-i', type=float,
+            help='Order of statistic to return')
     args = parser.parse_args()
 
     A = np.array(args.A)
-    A = quickSort(A)
-    print A
+    s = randomSelect(A,args.i)[0]
+    print s

@@ -5,6 +5,7 @@
 
 import sys
 import pdb
+import numpy as np
 
 def mergeSort(A):
     '''Return sorted copy of A'''
@@ -22,25 +23,26 @@ def mergeSort(A):
         # Merge sorted arrays B and C
         i = 0
         j = 0
-        sortedA = []
+        sortedA = np.array([])
         while True:
             if B[i] < C[j]:
-                sortedA.append(B[i])
+                sortedA = np.append(sortedA, B[i])
                 i += 1
             else:
-                sortedA.append(C[j])
+                sortedA = np.append(sortedA, C[j])
                 j += 1
 
             # If an array reaches its end, add on all the elements from other
             if i == len(B):
-                return sortedA + C[j:]
+                return np.append(sortedA, C[j:] )
             elif j == len(C):
-                return sortedA + B[i:]
+                return np.append(sortedA, B[i:] )
 
 if __name__ == "__main__":
 
     try:
         unsorted = [ float(element) for element in sys.argv[1:] ]
+        unsorted = np.array(unsorted)
     except ValueError:
         print "Please pass an unsorted list of floats as the arguments of the program."
         exit()
