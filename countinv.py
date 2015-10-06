@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         'Use mergeSort logic to count inversions in an array of ints. O(n log n)')
-    parser.add_argument('-A', type=float, nargs='+',
+    parser.add_argument('-A', type=int, nargs='+',
             help='Array to sort as command-line input')
     parser.add_argument('-f', type=str,
             help='Order of statistic to return')
