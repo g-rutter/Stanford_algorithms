@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument('-A', type=int, nargs='+',
             help='Array to sort as command-line input')
     parser.add_argument('-f', type=str,
-            help='Order of statistic to return')
+            help='Name of file containing an array.')
     args = parser.parse_args()
 
     if args.f != None:
