@@ -8,18 +8,22 @@ from prettytable import PrettyTable
 import random
 
 class adjListGraph(object):
-
     """
     Adjacency list-based graph with methods for construction, destruction
     and inspection of vertices and edges.
     """
 
     def __init__(self, n = 0, m = 0):
+        ''' Construct adjListGraph object with n vertices and m edges. If m is
+            nonzero, edges are assigned randomly. Use addEdge after creation to
+            build a specific graph.
+        '''
+
         self.__vertices__ = []
         self.__edges__ = []
 
         if n != 0:
-            self.randomPopulate(n,m)
+            self.randomPopulate(n, m)
 
     def __str__(self):
         allVerts = self.getVertices()
@@ -34,13 +38,16 @@ class adjListGraph(object):
         return str(table)
 
     def addVertex(self, value):
-        self.__vertices__.append( Vertex(self, value) )
+        new_vertex = Vertex(self, value) 
+        self.__vertices__.append(new_vertex)
+        return new_vertex
 
     def addEdge(self, u, v):
-        newEdge = Edge(self, u, v)
-        self.__edges__.append( newEdge )
-        u.addEdge(newEdge)
-        v.addEdge(newEdge)
+        new_edge = Edge(self, u, v)
+        self.__edges__.append(new_edge)
+        u.addEdge(new_edge)
+        v.addEdge(new_edge)
+        return new_edge
 
     def rmVertex(self, v):
         # Requires removal of all edges associated with v
@@ -60,7 +67,7 @@ class adjListGraph(object):
     def mergeEdge(self, e):
         # Merge v into u: u takes on v's edges and v is removed from graph.
         (u,v) = e.getVertices()
-        self.mergeVertices(u,v)
+        self.mergeVertices(u, v)
 
     def mergeVertices(self, u, v):
         # Merge v into u: u takes on v's edges and v is removed from graph.
@@ -95,7 +102,7 @@ class adjListGraph(object):
             exit()
 
         if (current_n != 0):
-            print "WARNING: graph is not empty. Edges will not uniformly "\
+            print "WARNING: graph is not empty. Edges will not be uniformly "\
                     "distributed and multiple instances of the same vertex "\
                     "value can occur if vertices have been deleted."
 
@@ -175,3 +182,44 @@ class Edge(object):
 
     def getParent(self):
         return self.__parent__
+
+def fromFile(filename):
+    """ Makes an adjacencyListGraph object from a text file containing an
+        adjaceny list. File should be organised as:
+
+        1 [space-separated list of connections to 1]
+        2 [space-separated list of connections to 2]
+        3 [space-separated list of connections to 3]
+        4 ...
+
+        e.g.
+
+        1 2 3 4 7
+        2 1 3 4
+        3 1 2 4
+        4 1 2 3 5
+        5 ...
+    """
+
+    with open(filename, 'r') as graph_file:
+        g = adjListGraph()
+
+        for line in graph_file:
+            values = line.split()
+
+            new_vertex_val = int(values[0])
+            adj_vertices_vals = [int(value) for value in values[1:]]
+
+            new_vertex = g.addVertex(new_vertex_val)
+
+            for adj_vertex_val in adj_vertices_vals:
+                # Only add vertices with lower value, i.e. already exist.
+                if adj_vertex_val <= new_vertex_val:
+                    # Assume index of vertex on getVertices() tuple is
+                    # adj_vertex_val-1. Safer approach would be to use two-way
+                    # dict to map between values and vertices.
+                    adj_vertex = g.getVertices()[adj_vertex_val-1]
+                    g.addEdge(new_vertex, adj_vertex)
+
+    return g
+

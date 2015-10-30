@@ -4,9 +4,11 @@
 # Discussed in section 9.
 # Implements the random contraction algorithm
 
-from adjacencyListGraph import adjListGraph
+from adjacencyListGraph import adjListGraph, fromFile
 import random
+import sys
 import Queue
+from copy import deepcopy
 
 def shortestPath(start, goal):
     '''
@@ -43,7 +45,7 @@ def shortestPath(start, goal):
 
     return float("inf")
 
-def minCutRandomContract(g):
+def RandomContract(g):
     '''
     Takes a graph g and executes uniformly selected random cuts on it
     iteratively, yielding the minimum cut with 1/n^2 probability.
@@ -60,13 +62,34 @@ def minCutRandomContract(g):
             raise
         g.mergeEdge(e)
 
+def nRandomContracts(g, n=1000):
+    '''
+    Runs RandomContract on a copy of g, n times.
+    Returns the minimum cut found (lowest number of edges in the final graph.)
+    over all n runs.
+    '''
+
+    mincut = len(g.getEdges())
+
+    for i in range(n):
+        h = deepcopy(g)
+        RandomContract(h)
+        mincut = min([mincut, len(h.getEdges())])
+
+    return mincut
+
 if __name__ == "__main__":
 
-    g = adjListGraph(n = 20, m = 40)
-    # minCutRandomContract(g)
 
-    print g
-    print "From", g.getVertices()[0].getValue(), "to", g.getVertices()[1].getValue()
-    length = shortestPath(g.getVertices()[0], g.getVertices()[1])
-    print "Shortest path is", length, "steps."
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        print "Please pass the name of the file containing an adjacency list "\
+              "for a graph as the first argument."
+        raise
 
+    # g = adjListGraph(n = 20, m = 40)
+    g = fromFile(filename)
+    sys.setrecursionlimit(2500)
+
+    print nRandomContracts(g, n=1000)
