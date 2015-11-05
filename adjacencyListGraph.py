@@ -6,6 +6,7 @@
 
 from prettytable import PrettyTable
 import random
+from copy import deepcopy
 
 class adjListGraph(object):
     """
@@ -13,7 +14,7 @@ class adjListGraph(object):
     and inspection of vertices and edges.
     """
 
-    def __init__(self, n = 0, m = 0):
+    def __init__(self, directed = False, n = 0, m = 0):
         ''' Construct adjListGraph object with n vertices and m edges. If m is
             nonzero, edges are assigned randomly. Use addEdge after creation to
             build a specific graph.
@@ -21,6 +22,7 @@ class adjListGraph(object):
 
         self.__vertices__ = []
         self.__edges__ = []
+        self.__directed__ = directed
 
         if n != 0:
             self.randomPopulate(n, m)
@@ -37,17 +39,77 @@ class adjListGraph(object):
 
         return str(table)
 
+    def reorderVertices(self, new_indices):
+        ''' Returns copy of self with vertices reordered and internal values
+            updated according to new_indices where:
+
+            new_indices[old_index] = new_value
+
+        '''
+
+        h = adjListGraph(directed=self.getDirected())
+        old_vertices = self.getVertices()
+        N = len(old_vertices)
+        new_vertices = [h.addVertex(i + 1) for i in range(N)]
+
+        for edge in self.getEdges():
+            old_verts = edge.getVertices()
+            new_vert_idx = [new_indices[old_vert.getValue() - 1] - 1
+                                                for old_vert in old_verts]
+
+            h.addEdge(new_vertices[new_vert_idx[0]],
+                      new_vertices[new_vert_idx[1]])
+
+        return h
+
+    def reverseDirectedGraph(self):
+        ''' Returns copy of self with edges reversed. Works but acheives
+            nothing if graph is undirected.
+        '''
+
+        h = adjListGraph(directed=self.getDirected())
+        replacement = {}
+        for vert in self.getVertices():
+            value = vert.getValue()
+            new_vert = h.addVertex(value)
+            replacement[value] = new_vert
+
+        for edge in self.getEdges():
+            old_vertices = edge.getVertices()
+            new_vert1 = replacement[old_vertices[0].getValue()]
+            new_vert2 = replacement[old_vertices[1].getValue()]
+            h.addEdge(new_vert2, new_vert1)
+
+        return h
+
+    def getDirected(self):
+        ''' Turns directed on by default, turns off if passed directed=False
+        '''
+
+        return self.__directed__
+
+    def setDirected(self, directed = True):
+        ''' Turns directed on by default, turns off if passed directed=False
+        '''
+
+        self.__directed__ = directed
+
     def addVertex(self, value):
         new_vertex = Vertex(self, value) 
         self.__vertices__.append(new_vertex)
         return new_vertex
 
     def addEdge(self, u, v):
-        new_edge = Edge(self, u, v)
-        self.__edges__.append(new_edge)
-        u.addEdge(new_edge)
-        v.addEdge(new_edge)
-        return new_edge
+        if u == v:
+            print "WARNING not adding loop edge between same u and v."
+            print "u.getValue() =", u.getValue()
+            return None
+        else:
+            new_edge = Edge(self, u, v)
+            self.__edges__.append(new_edge)
+            u.addEdge(new_edge)
+            v.addEdge(new_edge)
+            return new_edge
 
     def rmVertex(self, v):
         # Requires removal of all edges associated with v
@@ -66,7 +128,7 @@ class adjListGraph(object):
 
     def mergeEdge(self, e):
         # Merge v into u: u takes on v's edges and v is removed from graph.
-        (u,v) = e.getVertices()
+        (u, v) = e.getVertices()
         self.mergeVertices(u, v)
 
     def mergeVertices(self, u, v):
@@ -155,17 +217,28 @@ class Vertex(object):
     def getValue(self):
         return self.__value__
 
-    def getDirectVertices(self):
-        '''Vertices this vertex is connected to directly, via a single edge.'''
+    def setValue(self, value):
+        self.__value__ = value
+
+    def getDirectVertices(self, reverse=False):
+        ''' Vertices this vertex is connected to directly, via a single edge.
+            If parent graph is directed, only finds connected verices connected
+            by a tail from self to a head at the foreign vertex.
+        '''
+
         edges = self.getEdges()
         dvertices = []
         for edge in edges:
             vert_pair = edge.getVertices()
 
             if vert_pair[0] != self:
-                dvertices.append( vert_pair[0] )
+                # On directed graph, this means foreign vertex is at the tail
+                # of the edge and can't be reached from here.
+                if self.__parent__.__directed__ == False or reverse == True:
+                    dvertices.append( vert_pair[0] )
             else:
-                dvertices.append( vert_pair[1] )
+                if reverse == False:
+                    dvertices.append( vert_pair[1] )
 
         return tuple(dvertices)
 
@@ -174,6 +247,9 @@ class Edge(object):
     """ Edge object for adjListGraph class."""
 
     def __init__(self, graph, u, v):
+        ''' u will be considered tail, and v the head, if graph is directed.
+        '''
+
         self.__vertices__ = (u,v)
         self.__parent__ = graph
 
@@ -183,7 +259,51 @@ class Edge(object):
     def getParent(self):
         return self.__parent__
 
-def fromFile(filename):
+def fromFileType2(filename, directed=True):
+    """ Makes a directed adjacencyListGraph object from a text file containing
+        an adjacency list. Each row should represent an edge, with the first
+        column representing tails and the second, heads.
+
+        e.g.
+
+        1 2
+        1 3
+        2 7
+        ...
+    """
+
+    with open(filename, 'r') as graph_file:
+        g = adjListGraph(directed=directed)
+
+        # Get largest node value
+        max_node = 0
+        for line in graph_file:
+            node_idxs = [int(index)-1 for index in line.split()]
+            max_node = max(node_idxs+[max_node])
+
+    print "Creating", max_node+1, "nodes."
+    # Create nodes
+    for node_idx in range(max_node+1):
+        g.addVertex(node_idx+1)
+
+    verts = g.getVertices()
+
+    print "Creating edges."
+
+    with open(filename, 'r') as graph_file:
+
+        # Create edges
+        for line in graph_file:
+            node_idxs = [int(index)-1 for index in line.split()]
+
+            tail = verts[node_idxs[0]]
+            head = verts[node_idxs[1]]
+
+            g.addEdge(tail, head)
+
+    return g
+
+def fromFileType1(filename):
     """ Makes an adjacencyListGraph object from a text file containing an
         adjaceny list. File should be organised as:
 
@@ -222,4 +342,3 @@ def fromFile(filename):
                     g.addEdge(new_vertex, adj_vertex)
 
     return g
-
