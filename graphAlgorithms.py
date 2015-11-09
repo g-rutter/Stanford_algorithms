@@ -4,12 +4,13 @@
 # Discussed in section 9.
 # Implements the random contraction algorithm
 
-from adjacencyListGraph import adjListGraph, fromFileType1, fromFileType2
+from adjacencyListGraph import *
 import random
 import sys
 import Queue
 import numpy as np
 from copy import deepcopy
+import heapq
 
 def shortestPath(start, goal):
     '''
@@ -173,6 +174,63 @@ def DFS_it(g, start_idx, explored, leader, finish_time):
                 stack.append(j_vert)
                 stack += toappend
 
+def Dijkstra_Shortest_Path(g, start_idx):
+    ''' Heap implementation of Dijkstra's shortest path algorithm for exploring
+        graphs with weighted paths.
+    '''
+
+    vertices = g.getVertices()
+    N = len(vertices)
+    start = vertices[start_idx]
+
+    shortest = np.zeros([N], dtype=int)
+
+    #Initialise heap
+    h = []
+    # map vertex idx to entry on heap
+    vertex_finder = {}
+    for vert_idx in range(N):
+        vert_partners, lengths = vertices[vert_idx].getDirectVertices()
+        try:
+            dist = lengths[vert_partners.index(start)]
+        except ValueError:
+            dist = sys.maxint
+
+        entry = [dist, vert_idx]
+        heapq.heappush(h, entry)
+        vertex_finder[vert_idx] = entry
+
+    while h:
+
+        #Extract-min and add to shortest
+        nearest_dist, nearest_vert_idx = heapq.heappop(h)
+        if nearest_vert_idx != -1:
+            shortest[nearest_vert_idx] = nearest_dist
+
+            #Update heap
+            for neigh_vert, neigh_length in zip(*vertices[nearest_vert_idx].getDirectVertices()):
+                neigh_idx = neigh_vert.getValue() - 1
+
+                if shortest[neigh_idx] != 0:
+                    continue
+
+                neigh_new_length = nearest_dist + neigh_length
+
+                entry = vertex_finder[neigh_idx]
+                neigh_old_length = entry[0]
+                entry[1] = -1
+                entry[0] = -1
+
+                if neigh_new_length < neigh_old_length:
+                    new_entry = [neigh_new_length, neigh_idx]
+                else:
+                    new_entry = [neigh_old_length, neigh_idx]
+
+                heapq.heappush(h, new_entry)
+                vertex_finder[neigh_idx] = new_entry
+
+    return shortest
+
 if __name__ == "__main__":
 
     try:
@@ -182,25 +240,37 @@ if __name__ == "__main__":
               "for a graph as the first argument."
         raise
 
-    g = fromFileType2(filename)
-    print "Read-in complete."
+    ############################
+    #  For depth-first search  #
+    ############################
 
-    t = 0
-    s = 0
+    # g = fromFileType2(filename)
+    # print "Read-in complete."
 
-    h = g.reverseDirectedGraph()
-    _, finish_time = DFS_loop(h)
-    del h
+    # t = 0
+    # s = 0
 
-    print "finish_time obtained."
-    g = g.reorderVertices(finish_time)
-    print "Calculating leader"
-    leader, _ = DFS_loop(g)
-    print leader
+    # h = g.reverseDirectedGraph()
+    # _, finish_time = DFS_loop(h)
+    # del h
 
-    N = len(g.getVertices())
-    counts = []
-    for i in range(N):
-        counts.append(leader.count(i))
-    counts.sort(reverse=True)
-    print counts[:5]
+    # print "finish_time obtained."
+    # g = g.reorderVertices(finish_time)
+    # print "Calculating leader"
+    # leader, _ = DFS_loop(g)
+    # print leader
+
+    # N = len(g.getVertices())
+    # counts = []
+    # for i in range(N):
+        # counts.append(leader.count(i))
+    # counts.sort(reverse=True)
+    # print counts[:5]
+
+    ###################################
+    #  For shortest-path computation  #
+    ###################################
+
+    g = fromFileType3(filename)
+    print g
+    shortest = Dijkstra_Shortest_Path(g, 0)
