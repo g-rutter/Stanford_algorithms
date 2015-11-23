@@ -40,7 +40,7 @@ def shortestPath(start, goal):
 
                 exploredVerts.append(vert)
                 vertexqueue.put(vert)
-                dist[vert] = dist[v]+1
+                dist[vert] = dist[v] + 1
 
                 if vert == goal:
                     return dist[vert]
@@ -57,7 +57,7 @@ def RandomContract(g):
 
         allEdges = g.getEdges()
         try:
-            e = random.choice( allEdges )
+            e = random.choice(allEdges)
         except IndexError:
             print "ERROR: All edges removed before vertex counted reached 2. "\
                     "This implies the graph was disconnected."
@@ -133,7 +133,7 @@ def DFS(g, i, explored, leader, finish_time):
     head_verts = tail_vert.getDirectVertices()
 
     for head_vert in head_verts:
-        j = head_vert.getValue()-1
+        j = head_vert.getValue() - 1
 
         if not explored[j]:
             DFS(g, j, explored, leader, finish_time)

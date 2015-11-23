@@ -34,14 +34,14 @@ def mergeSort(A):
 
             # If an array reaches its end, add on all the elements from other
             if i == len(B):
-                return np.append(sortedA, C[j:] )
+                return np.append(sortedA, C[j:])
             elif j == len(C):
-                return np.append(sortedA, B[i:] )
+                return np.append(sortedA, B[i:])
 
 if __name__ == "__main__":
 
     try:
-        unsorted = [ float(element) for element in sys.argv[1:] ]
+        unsorted = [float(element) for element in sys.argv[1:]]
         unsorted = np.array(unsorted)
     except ValueError:
         print "Please pass an unsorted list of floats as the arguments of the program."

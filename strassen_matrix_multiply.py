@@ -41,7 +41,7 @@ def Strassen(X, Y):
 
         Ztop = np.hstack((P5+P4-P2+P6, P1+P2))
         Zbottom = np.hstack((P3+P4, P1+P5-P3-P7))
-        Z = np.vstack( (Ztop,Zbottom) )
+        Z = np.vstack((Ztop,Zbottom))
 
     return Z
 
@@ -72,8 +72,8 @@ def validInput():
     sqrtA = np.sqrt(lenX)
 
     try:
-        X = np.reshape(args.X, (sqrtA,sqrtA) )
-        Y = np.reshape(args.Y, (sqrtA,sqrtA) )
+        X = np.reshape(args.X, (sqrtA,sqrtA))
+        Y = np.reshape(args.Y, (sqrtA,sqrtA))
     except ValueError:
         print ('Arguments -X and -Y must both receive the same square number of inputs.')
         raise
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     C_check = np.dot(X,Y)
 
     try:
-        assert( np.array_equal(C, C_check) )
+        assert (np.array_equal(C, C_check))
     except AssertionError:
         print ('C=X*Y was calculated incorrectly by my Strassen function.')
         raise

@@ -17,7 +17,7 @@ def twoSum(integers, targets):
         The dict type provides a very easy hash table implementation in Py.
     '''
 
-    hashtable = dict([ (integer, True) for integer in integers ])
+    hashtable = dict([(integer, True) for integer in integers])
     hits = 0
 
     for integer1 in hashtable.keys():

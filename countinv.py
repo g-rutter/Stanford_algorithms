@@ -21,8 +21,8 @@ def sortAndCountInv(A):
         return A, 0
 
     else:
-        B,x = sortAndCountInv( A[:lenA/2] )
-        C,y = sortAndCountInv( A[lenA/2:] )
+        B, x = sortAndCountInv(A[:lenA/2])
+        C, y = sortAndCountInv(A[lenA/2:])
 
         #Merge sorted arrays B and C
         #indexes of lists to iterate over:

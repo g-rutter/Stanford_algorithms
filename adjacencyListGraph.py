@@ -14,7 +14,7 @@ class adjListGraph(object):
     and inspection of vertices and edges.
     """
 
-    def __init__(self, directed = False, n = 0, m = 0):
+    def __init__(self, directed = False, n=0, m=0):
         ''' Construct adjListGraph object with n vertices and m edges. If m is
             nonzero, edges are assigned randomly. Use addEdge after creation to
             build a specific graph.
@@ -35,7 +35,7 @@ class adjListGraph(object):
         for thisVert in allVerts:
             directVerts = thisVert.getDirectVertices()[0]
             table.add_row([thisVert.getValue(),
-                           " ".join([str(vert.getValue()) for vert in directVerts]) ])
+                           " ".join([str(vert.getValue()) for vert in directVerts])])
 
         return str(table)
 
@@ -95,7 +95,7 @@ class adjListGraph(object):
         self.__directed__ = directed
 
     def addVertex(self, value):
-        new_vertex = Vertex(self, value) 
+        new_vertex = Vertex(self, value)
         self.__vertices__.append(new_vertex)
         return new_vertex
 
@@ -236,12 +236,12 @@ class Vertex(object):
                 # On directed graph, this means foreign vertex is at the tail
                 # of the edge and can't be reached from here.
                 if self.__parent__.__directed__ == False or reverse == True:
-                    dvertices.append( vert_pair[0] )
-                    lengths.append( edge.getLength() )
+                    dvertices.append(vert_pair[0])
+                    lengths.append(edge.getLength())
             else:
                 if reverse == False:
-                    dvertices.append( vert_pair[1] )
-                    lengths.append( edge.getLength() )
+                    dvertices.append(vert_pair[1])
+                    lengths.append(edge.getLength())
 
         return tuple(dvertices), tuple(lengths)
 
