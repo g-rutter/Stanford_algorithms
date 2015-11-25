@@ -6,6 +6,7 @@
 import sys
 import numpy as np
 
+
 def twoSum(integers, targets):
     ''' The 2-sum problem is determining whether a pair of ints from an array A
         sum to a given target value. Hashing makes this possible in O(n).
@@ -36,5 +37,5 @@ def twoSum(integers, targets):
 if __name__ == "__main__":
     filename = sys.argv[1]
     integers = np.fromfile(filename, sep=" ", dtype=np.int64)
-    hits = twoSum(integers, range(-10000,10001))
+    hits = twoSum(integers, range(-10000, 10001))
     print hits

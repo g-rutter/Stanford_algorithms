@@ -12,9 +12,10 @@ import numpy as np
 from copy import deepcopy
 import heapq
 
+
 def shortestPath(start, goal):
     '''
-    Use breadth-first search and keep track of minimum distance of each 
+    Use breadth-first search and keep track of minimum distance of each
     explored node from starting node. Terminate when goal node is reached.
 
     Return: number of edges between node start and node goal.
@@ -24,7 +25,7 @@ def shortestPath(start, goal):
     vertexqueue = Queue.Queue()
     vertexqueue.put(start)
     exploredVerts = [start]
-    dist          = {start:0}
+    dist = {start: 0}
 
     if start == goal:
         return dist[start]
@@ -47,22 +48,24 @@ def shortestPath(start, goal):
 
     return float("inf")
 
+
 def RandomContract(g):
     '''
     Takes a graph g and executes uniformly selected random cuts on it
     iteratively, yielding the minimum cut with 1/n^2 probability.
     '''
 
-    while len( g.getVertices() ) > 2:
+    while len(g.getVertices()) > 2:
 
         allEdges = g.getEdges()
         try:
             e = random.choice(allEdges)
         except IndexError:
             print "ERROR: All edges removed before vertex counted reached 2. "\
-                    "This implies the graph was disconnected."
+                "This implies the graph was disconnected."
             raise
         g.mergeEdge(e)
+
 
 def nRandomContracts(g, n=1000):
     '''
@@ -79,6 +82,7 @@ def nRandomContracts(g, n=1000):
         mincut = min([mincut, len(h.getEdges())])
 
     return mincut
+
 
 def DFS_loop(g):
     '''
@@ -109,16 +113,18 @@ def DFS_loop(g):
 
     N = len(g.getVertices())
 
-    explored = np.zeros(N, dtype=bool) # List of explored nodes by IDX (value-1)
+    # List of explored nodes by IDX (value-1)
+    explored = np.zeros(N, dtype=bool)
     leader = [-1 for i in range(N)]
     finish_time = np.zeros(N, dtype=int)
 
-    for i in range(N-1, -1, -1):
+    for i in range(N - 1, -1, -1):
         if not explored[i]:
             s = i
             DFS_it(g, i, explored, leader, finish_time)
 
     return leader, finish_time
+
 
 def DFS(g, i, explored, leader, finish_time):
     ''' Recursive implementation of DFS for finding SSCs
@@ -140,6 +146,7 @@ def DFS(g, i, explored, leader, finish_time):
 
     t += 1
     finish_time[i] = t
+
 
 def DFS_it(g, start_idx, explored, leader, finish_time):
     ''' Iterative implementation of DFS for finding SSCs
@@ -174,6 +181,7 @@ def DFS_it(g, start_idx, explored, leader, finish_time):
                 stack.append(j_vert)
                 stack += toappend
 
+
 def Dijkstra_Shortest_Path(g, start_idx):
     ''' Heap implementation of Dijkstra's shortest path algorithm for exploring
         graphs with weighted paths.
@@ -185,7 +193,7 @@ def Dijkstra_Shortest_Path(g, start_idx):
 
     shortest = np.zeros([N], dtype=int)
 
-    #Initialise heap
+    # Initialise heap
     h = []
     # map vertex idx to entry on heap
     vertex_finder = {}
@@ -202,13 +210,14 @@ def Dijkstra_Shortest_Path(g, start_idx):
 
     while h:
 
-        #Extract-min and add to shortest
+        # Extract-min and add to shortest
         nearest_dist, nearest_vert_idx = heapq.heappop(h)
         if nearest_vert_idx != -1:
             shortest[nearest_vert_idx] = nearest_dist
 
-            #Update heap
-            for neigh_vert, neigh_length in zip(*vertices[nearest_vert_idx].getDirectVertices()):
+            # Update heap
+            neighs = zip(*vertices[nearest_vert_idx].getDirectVertices())
+            for neigh_vert, neigh_length in neighs:
                 neigh_idx = neigh_vert.getValue() - 1
 
                 if shortest[neigh_idx] != 0:

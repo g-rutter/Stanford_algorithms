@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#Discussed in section 2.
+# Discussed in section 2.
 
 import sys
 import pdb
 import numpy as np
+
 
 def mergeSort(A):
     '''Return sorted copy of A'''
@@ -16,7 +17,7 @@ def mergeSort(A):
         return A
 
     else:
-        halflenA = lenA/2
+        halflenA = lenA / 2
         B = mergeSort(A[:halflenA])
         C = mergeSort(A[halflenA:])
 
@@ -44,7 +45,7 @@ if __name__ == "__main__":
         unsorted = [float(element) for element in sys.argv[1:]]
         unsorted = np.array(unsorted)
     except ValueError:
-        print "Please pass an unsorted list of floats as the arguments of the program."
+        print "Please pass an unsorted list of floats as the arguments."
         exit()
 
     print mergeSort(unsorted)

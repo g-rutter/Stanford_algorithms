@@ -7,6 +7,7 @@ import sys
 import numpy as np
 import heapq
 
+
 def getMedians(integers):
     ''' Use two heaps to record the median for each of integers[:1],
         integers[:2], integers[:3], ... integers
@@ -37,8 +38,7 @@ def getMedians(integers):
                 val = -heapq.heappop(lowheap)
                 heapq.heappush(highheap, val)
 
-        medians[i+1] = -lowheap[0]
-
+        medians[i + 1] = -lowheap[0]
 
     return medians
 

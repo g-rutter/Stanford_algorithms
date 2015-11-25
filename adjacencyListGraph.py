@@ -8,13 +8,14 @@ from prettytable import PrettyTable
 import random
 from copy import deepcopy
 
+
 class adjListGraph(object):
     """
     Adjacency list-based graph with methods for construction, destruction
     and inspection of vertices and edges.
     """
 
-    def __init__(self, directed = False, n=0, m=0):
+    def __init__(self, directed=False, n=0, m=0):
         ''' Construct adjListGraph object with n vertices and m edges. If m is
             nonzero, edges are assigned randomly. Use addEdge after creation to
             build a specific graph.
@@ -35,7 +36,8 @@ class adjListGraph(object):
         for thisVert in allVerts:
             directVerts = thisVert.getDirectVertices()[0]
             table.add_row([thisVert.getValue(),
-                           " ".join([str(vert.getValue()) for vert in directVerts])])
+                           " ".join([str(vert.getValue())
+                                     for vert in directVerts])])
 
         return str(table)
 
@@ -55,7 +57,7 @@ class adjListGraph(object):
         for edge in self.getEdges():
             old_verts = edge.getVertices()
             new_vert_idx = [new_indices[old_vert.getValue() - 1] - 1
-                                                for old_vert in old_verts]
+                            for old_vert in old_verts]
 
             h.addEdge(new_vertices[new_vert_idx[0]],
                       new_vertices[new_vert_idx[1]])
@@ -88,7 +90,7 @@ class adjListGraph(object):
 
         return self.__directed__
 
-    def setDirected(self, directed = True):
+    def setDirected(self, directed=True):
         ''' Turns directed on by default, turns off if passed directed=False
         '''
 
@@ -152,23 +154,23 @@ class adjListGraph(object):
     def getEdges(self):
         return tuple(self.__edges__)
 
-    def randomPopulate(self, n = 10, m = 20):
+    def randomPopulate(self, n=10, m=20):
         "Populate the graph with n nodes and m random connections."
 
         current_vertices = self.getVertices()
         current_n = len(current_vertices)
 
-        if n+current_n == 1 and m < 0:
+        if n + current_n == 1 and m < 0:
             print "ERROR: since self-links are not possible, cannot populate "\
-                    "graph of one vertex with edges."
+                "graph of one vertex with edges."
             exit()
 
         if (current_n != 0):
             print "WARNING: graph is not empty. Edges will not be uniformly "\
-                    "distributed and multiple instances of the same vertex "\
-                    "value can occur if vertices have been deleted."
+                "distributed and multiple instances of the same vertex "\
+                "value can occur if vertices have been deleted."
 
-        for i in range( current_n, current_n + n):
+        for i in range(current_n, current_n + n):
             self.addVertex(i)
 
         current_vertices = self.getVertices()
@@ -180,7 +182,8 @@ class adjListGraph(object):
             while u == v:
                 v = random.choice(current_vertices)
 
-            self.addEdge(u,v)
+            self.addEdge(u, v)
+
 
 class Vertex(object):
 
@@ -194,7 +197,7 @@ class Vertex(object):
     def addEdge(self, edge):
         try:
             self.__edges__.index(edge)
-            print "Edge" , edge, "already exists on vertex", self
+            print "Edge", edge, "already exists on vertex", self
             exit()
         except ValueError:
             self.__edges__.append(edge)
@@ -235,15 +238,16 @@ class Vertex(object):
             if vert_pair[0] != self:
                 # On directed graph, this means foreign vertex is at the tail
                 # of the edge and can't be reached from here.
-                if self.__parent__.__directed__ == False or reverse == True:
+                if not self.__parent__.__directed__ or reverse:
                     dvertices.append(vert_pair[0])
                     lengths.append(edge.getLength())
             else:
-                if reverse == False:
+                if not reverse:
                     dvertices.append(vert_pair[1])
                     lengths.append(edge.getLength())
 
         return tuple(dvertices), tuple(lengths)
+
 
 class Edge(object):
 
@@ -253,7 +257,7 @@ class Edge(object):
         ''' u will be considered tail, and v the head, if graph is directed.
         '''
 
-        self.__vertices__ = (u,v)
+        self.__vertices__ = (u, v)
         self.__parent__ = graph
         self.__length__ = length
 
@@ -265,6 +269,7 @@ class Edge(object):
 
     def getLength(self):
         return self.__length__
+
 
 def fromFileType2(filename, directed=True):
     """ Makes a directed adjacencyListGraph object from a text file containing
@@ -285,13 +290,13 @@ def fromFileType2(filename, directed=True):
         # Get largest node value
         max_node = 0
         for line in graph_file:
-            node_idxs = [int(index)-1 for index in line.split()]
-            max_node = max(node_idxs+[max_node])
+            node_idxs = [int(index) - 1 for index in line.split()]
+            max_node = max(node_idxs + [max_node])
 
-    print "Creating", max_node+1, "nodes."
+    print "Creating", max_node + 1, "nodes."
     # Create nodes
-    for node_idx in range(max_node+1):
-        g.addVertex(node_idx+1)
+    for node_idx in range(max_node + 1):
+        g.addVertex(node_idx + 1)
 
     verts = g.getVertices()
 
@@ -301,7 +306,7 @@ def fromFileType2(filename, directed=True):
 
         # Create edges
         for line in graph_file:
-            node_idxs = [int(index)-1 for index in line.split()]
+            node_idxs = [int(index) - 1 for index in line.split()]
 
             tail = verts[node_idxs[0]]
             head = verts[node_idxs[1]]
@@ -309,6 +314,7 @@ def fromFileType2(filename, directed=True):
             g.addEdge(tail, head)
 
     return g
+
 
 def fromFileType1(filename):
     """ Makes an adjacencyListGraph object from a text file containing an
@@ -345,10 +351,11 @@ def fromFileType1(filename):
                     # Assume index of vertex on getVertices() tuple is
                     # adj_vertex_val-1. Safer approach would be to use two-way
                     # dict to map between values and vertices.
-                    adj_vertex = g.getVertices()[adj_vertex_val-1]
+                    adj_vertex = g.getVertices()[adj_vertex_val - 1]
                     g.addEdge(new_vertex, adj_vertex)
 
     return g
+
 
 def fromFileType3(filename):
     ''' Make adjListGraph object from text file of a graph with edges
@@ -369,7 +376,8 @@ def fromFileType3(filename):
             entries = line.split()
 
             new_vertex_val = int(entries[0])
-            connections = [[int(value) for value in entry.split(',')] for entry in entries[1:]]
+            connections = [[int(value) for value in entry.split(',')]
+                           for entry in entries[1:]]
 
             new_vertex = g.addVertex(new_vertex_val)
 
@@ -379,7 +387,7 @@ def fromFileType3(filename):
                     # Assume index of vertex on getVertices() tuple is
                     # adj_vertex_val-1. Safer approach would be to use two-way
                     # dict to map between values and vertices.
-                    adj_vertex = g.getVertices()[adj_vertex_val-1]
+                    adj_vertex = g.getVertices()[adj_vertex_val - 1]
                     g.addEdge(new_vertex, adj_vertex, length=edge_length)
 
     return g
